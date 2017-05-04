@@ -34,8 +34,14 @@ public class InventoryTest {
     			return Collections.emptyList();
     		}
     	};
+    	final MarketingTemplate mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return true;
+    		}
+    	};
         final LocalDate today = LocalDate.now();
-        final InventoryManager im = new AceInventoryManager(db);
+        final InventoryManager im = new AceInventoryManager(db, mi);
 
         // when
         final List<Order> actual = im.getOrders(today);
@@ -61,7 +67,13 @@ public class InventoryTest {
     			return Collections.singletonList(item);
     		}
     	};
-    	final InventoryManager im = new AceInventoryManager(db);
+    	final MarketingTemplate mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return false;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
     	final LocalDate today = LocalDate.now();
     	
     	
@@ -93,7 +105,13 @@ public class InventoryTest {
     			return Collections.singletonList(item);
     		}
     	};
-    	final InventoryManager im = new AceInventoryManager(db);
+    	final MarketingTemplate mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return false;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
     	final LocalDate today = LocalDate.now();
     	
     	// when
@@ -120,7 +138,13 @@ public class InventoryTest {
     			return Collections.singletonList(item);
     		}
     	};
-    	final InventoryManager im = new AceInventoryManager(db);
+    	final MarketingTemplate mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return false;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
     	final LocalDate today = LocalDate.now();
     	
     	// when
@@ -129,6 +153,41 @@ public class InventoryTest {
     	//then
     	assertTrue(actual.isEmpty());
     	
+    }
+    
+    @Test
+    public void ifOnSaleKeepExtraTwenty(){
+    	//given
+    	final int onHand = 9;
+    	final int shouldHave = 15;
+    	final boolean onSale = true;
+    	Item item = new StockedItem(shouldHave);
+    	final InventoryDatabase db = new DatabaseTemplate(){
+    		@Override
+    		public int onHand(Item item) {
+    			return onHand;
+    		}
+    		@Override
+    		public List<Item> stockItems() {
+    			return Collections.singletonList(item);
+    		}
+    	};
+    	final MarketingTemplate mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return true;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+    	assertEquals(1, actual.size());
+    	assertEquals(item, actual.get(0).item);
+    	assertEquals(shouldHave+20-onHand, actual.get(0).quantity );
     }
 
 }

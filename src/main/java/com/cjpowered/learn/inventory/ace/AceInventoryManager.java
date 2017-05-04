@@ -8,13 +8,16 @@ import com.cjpowered.learn.inventory.InventoryDatabase;
 import com.cjpowered.learn.inventory.InventoryManager;
 import com.cjpowered.learn.inventory.Item;
 import com.cjpowered.learn.inventory.Order;
+import com.cjpowered.learn.marketing.MarketingInfo;
 
 public final class AceInventoryManager implements InventoryManager {
 
 	private final InventoryDatabase database;
+	private final MarketingInfo marketingInfo;
 	
-	public AceInventoryManager(InventoryDatabase database){
+	public AceInventoryManager(InventoryDatabase database, MarketingInfo marketingInfo){
 		this.database = database;
+		this.marketingInfo = marketingInfo;
 	}
 	
     @Override
@@ -24,11 +27,17 @@ public final class AceInventoryManager implements InventoryManager {
     	 final List<Item> items = database.stockItems();
     	 for(Item item : items){
     		 int onHand = database.onHand(item);
-    		 int toOrder = item.wantOnHand() - onHand;
+    		 int wantOnHand = item.wantOnHand();
+    		 if(marketingInfo.onSale(item)){
+    			 wantOnHand += 20;
+    		 }
+    		 int toOrder = wantOnHand - onHand;
     		 if(toOrder > 0){
     			 final Order order = new Order(item, toOrder);
         		 orders.add(order);
     		 }
+    		 
+    		 
     		 
     	 }
     	 return orders;
