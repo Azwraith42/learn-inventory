@@ -5,8 +5,12 @@ package com.cjpowered.learn.inventory;
  * when you invoke {@link InventoryDatabase#stockItems()}
  *
  */
+import com.cjpowered.learn.marketing.Season;
+
 public interface Item {
 
 	int wantOnHand();
+	
+	Season season();
 	
 }

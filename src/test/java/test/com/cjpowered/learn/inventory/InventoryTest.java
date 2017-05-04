@@ -15,6 +15,7 @@ import com.cjpowered.learn.inventory.Item;
 import com.cjpowered.learn.inventory.Order;
 import com.cjpowered.learn.inventory.StockedItem;
 import com.cjpowered.learn.inventory.ace.AceInventoryManager;
+import com.cjpowered.learn.marketing.Season;
 
 /*
  * We need to keep items in stock to prevent back orders. See the README.md
@@ -39,6 +40,10 @@ public class InventoryTest {
     		public boolean onSale(final Item item){
     			return true;
     		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
+    		}
     	};
         final LocalDate today = LocalDate.now();
         final InventoryManager im = new AceInventoryManager(db, mi);
@@ -56,7 +61,7 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = 16;
-    	Item item = new StockedItem(shouldHave);
+    	Item item = new StockedItem(shouldHave, Season.Winter);
     	final InventoryDatabase db = new DatabaseTemplate() {
     		@Override
     		public int onHand(Item item) {
@@ -71,6 +76,9 @@ public class InventoryTest {
     		@Override
     		public boolean onSale(final Item item){
     			return false;
+    		}@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
     		}
     	};
     	final InventoryManager im = new AceInventoryManager(db, mi);
@@ -94,7 +102,7 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = 9;
-    	Item item = new StockedItem(shouldHave);
+    	Item item = new StockedItem(shouldHave, Season.Winter);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -109,6 +117,10 @@ public class InventoryTest {
     		@Override
     		public boolean onSale(final Item item){
     			return false;
+    		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
     		}
     	};
     	final InventoryManager im = new AceInventoryManager(db, mi);
@@ -127,7 +139,7 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = onHand;
-    	Item item = new StockedItem(shouldHave);
+    	Item item = new StockedItem(shouldHave, Season.Winter);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -142,6 +154,10 @@ public class InventoryTest {
     		@Override
     		public boolean onSale(final Item item){
     			return false;
+    		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
     		}
     	};
     	final InventoryManager im = new AceInventoryManager(db, mi);
@@ -161,7 +177,7 @@ public class InventoryTest {
     	final int onHand = 9;
     	final int shouldHave = 15;
     	final boolean onSale = true;
-    	Item item = new StockedItem(shouldHave);
+    	Item item = new StockedItem(shouldHave, Season.Winter);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -175,7 +191,11 @@ public class InventoryTest {
     	final MarketingTemplate mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item){
-    			return true;
+    			return onSale;
+    		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
     		}
     	};
     	final InventoryManager im = new AceInventoryManager(db, mi);
@@ -189,5 +209,126 @@ public class InventoryTest {
     	assertEquals(item, actual.get(0).item);
     	assertEquals(shouldHave+20-onHand, actual.get(0).quantity );
     }
+    
+    @Test
+    public void keepDoubleInventoryIfInSeason(){
+    	//given
+    	final int onHand = 7;
+    	final int shouldHave = 22;
+    	final Season season = Season.Fall;
+    	final boolean onSale = false;
+    	Item item = new StockedItem(shouldHave, season);
+    	final InventoryDatabase db = new DatabaseTemplate(){
+    		@Override
+    		public int onHand(Item item) {
+    			return onHand;
+    		}
+    		@Override
+    		public List<Item> stockItems() {
+    			return Collections.singletonList(item);
+    		}
+    	};
+    	final MarketingTemplate mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return onSale;
+    		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+    	assertEquals(1, actual.size());
+    	assertEquals(item, actual.get(0).item);
+    	assertEquals( (shouldHave*2) - onHand, actual.get(0).quantity);
+    }
 
+    @Test
+    public void onSaleAndInSeasonAdditionLarger(){
+    	//given
+    	final int onHand = 3;
+    	final int shouldHave = 15;
+    	final Season season = Season.Fall;
+    	final boolean onSale = true;
+    	Item item = new StockedItem(shouldHave, season);
+    	final InventoryDatabase db = new DatabaseTemplate(){
+    		@Override
+    		public int onHand(Item item) {
+    			return onHand;
+    		}
+    		@Override
+    		public List<Item> stockItems() {
+    			return Collections.singletonList(item);
+    		}
+    	};
+    	final MarketingTemplate mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return onSale;
+    		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+    	assertEquals(1, actual.size());
+    	assertEquals(item, actual.get(0).item);
+    	assertEquals( (shouldHave+20) - onHand, actual.get(0).quantity);
+    }
+    
+    @Test
+    public void onSaleAndInSeasonMultiplicationLarger(){
+    	//given
+    	final int onHand = 8;
+    	final int shouldHave = 25;
+    	final Season season = Season.Fall;
+    	final boolean onSale = true;
+    	Item item = new StockedItem(shouldHave, season);
+    	final InventoryDatabase db = new DatabaseTemplate(){
+    		@Override
+    		public int onHand(Item item) {
+    			return onHand;
+    		}
+    		@Override
+    		public List<Item> stockItems() {
+    			return Collections.singletonList(item);
+    		}
+    	};
+    	final MarketingTemplate mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return onSale;
+    		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+    	assertEquals(1, actual.size());
+    	assertEquals(item, actual.get(0).item);
+    	assertEquals( (shouldHave*2) - onHand, actual.get(0).quantity);
+    }
+    
+    
 }
