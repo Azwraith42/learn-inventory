@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/cjlearn/learn-inventory.svg?branch=master)](https://travis-ci.org/cjlearn/learn-inventory)
+[![Build Status](https://travis-ci.org/Azwraith42/learn-inventory.svg?branch=master)](https://travis-ci.org/Azwraith42/learn-inventory)
 
 # Inventory
 
