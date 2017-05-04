@@ -172,6 +172,46 @@ public class InventoryTest {
     }
     
     @Test
+    public void ifWeHaveMoreThanShouldHaveButStillNeedMoreBecauseOnSale(){
+    	// given
+    	final int onHand = 10;
+    	final int shouldHave = 9;
+    	Item item = new StockedItem(shouldHave, Season.Winter);
+    	final InventoryDatabase db = new DatabaseTemplate(){
+    		@Override
+    		public int onHand(Item item) {
+    			return onHand;
+    		}
+    		@Override
+    		public List<Item> stockItems() {
+    			return Collections.singletonList(item);
+    		}
+    	};
+    	final MarketingTemplate mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return true;
+    		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	// when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+    	assertEquals(1, actual.size());
+    	assertEquals(item, actual.get(0).item);
+    	assertEquals( (shouldHave+20) - onHand, actual.get(0).quantity);
+    	
+    	
+    }
+    
+    @Test
     public void ifOnSaleKeepExtraTwenty(){
     	//given
     	final int onHand = 9;
