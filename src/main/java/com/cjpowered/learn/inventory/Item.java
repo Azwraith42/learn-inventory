@@ -13,6 +13,8 @@ import com.cjpowered.learn.marketing.MarketingInfo;
 import java.time.LocalDate;
 
 public interface Item {
+	
+	boolean canOnlyBeOrderedOnFirstOfTheMonth();
 
 	Optional<Order> createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo);
 	
