@@ -5,12 +5,13 @@ package com.cjpowered.learn.inventory;
  * when you invoke {@link InventoryDatabase#stockItems()}
  *
  */
-import com.cjpowered.learn.marketing.Season;
+
+import com.cjpowered.learn.marketing.MarketingInfo;
+
+import java.time.LocalDate;
 
 public interface Item {
 
-	int wantOnHand();
-	
-	Season season();
+	Order createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo);
 	
 }

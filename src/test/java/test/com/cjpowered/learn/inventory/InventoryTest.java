@@ -5,7 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -13,8 +16,10 @@ import com.cjpowered.learn.inventory.InventoryDatabase;
 import com.cjpowered.learn.inventory.InventoryManager;
 import com.cjpowered.learn.inventory.Item;
 import com.cjpowered.learn.inventory.Order;
+import com.cjpowered.learn.inventory.SeasonalItem;
 import com.cjpowered.learn.inventory.StockedItem;
 import com.cjpowered.learn.inventory.ace.AceInventoryManager;
+import com.cjpowered.learn.marketing.MarketingInfo;
 import com.cjpowered.learn.marketing.Season;
 
 /*
@@ -61,18 +66,11 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = 16;
-    	Item item = new StockedItem(shouldHave, Season.Winter);
-    	final InventoryDatabase db = new DatabaseTemplate() {
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    	};
-    	final MarketingTemplate mi = new MarketingTemplate(){
+    	Item item = new StockedItem(shouldHave);
+    	final HashMap<Item, Integer> store = new HashMap<>();
+    	store.put(item, onHand);
+    	final InventoryDatabase db = new FakeDatabase(store);
+    	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item){
     			return false;
@@ -91,9 +89,9 @@ public class InventoryTest {
     	
     	
     	//then
-    	assertEquals(1, actual.size());
-    	assertEquals(item, actual.get(0).item);
-    	assertEquals(shouldHave-onHand, actual.get(0).quantity );
+    	Order expectedOrder = new Order(item, shouldHave - onHand);
+    	Set<Order> expected = Collections.singleton(expectedOrder);
+    	assertEquals(expected, new HashSet<>(actual));
     	
     }
     
@@ -102,7 +100,7 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = 9;
-    	Item item = new StockedItem(shouldHave, Season.Winter);
+    	Item item = new StockedItem(shouldHave);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -113,7 +111,7 @@ public class InventoryTest {
     			return Collections.singletonList(item);
     		}
     	};
-    	final MarketingTemplate mi = new MarketingTemplate(){
+    	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item){
     			return false;
@@ -139,7 +137,7 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = onHand;
-    	Item item = new StockedItem(shouldHave, Season.Winter);
+    	Item item = new StockedItem(shouldHave);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -150,7 +148,7 @@ public class InventoryTest {
     			return Collections.singletonList(item);
     		}
     	};
-    	final MarketingTemplate mi = new MarketingTemplate(){
+    	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item){
     			return false;
@@ -176,7 +174,7 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = 9;
-    	Item item = new StockedItem(shouldHave, Season.Winter);
+    	Item item = new StockedItem(shouldHave);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -217,18 +215,11 @@ public class InventoryTest {
     	final int onHand = 9;
     	final int shouldHave = 15;
     	final boolean onSale = true;
-    	Item item = new StockedItem(shouldHave, Season.Winter);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    	};
-    	final MarketingTemplate mi = new MarketingTemplate(){
+    	Item item = new StockedItem(shouldHave);
+    	final HashMap<Item, Integer> store = new HashMap<>();
+    	store.put(item, onHand);
+    	final InventoryDatabase db = new FakeDatabase(store);
+    	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item){
     			return onSale;
@@ -245,9 +236,10 @@ public class InventoryTest {
     	final List<Order> actual = im.getOrders(today);
     	
     	//then
-    	assertEquals(1, actual.size());
-    	assertEquals(item, actual.get(0).item);
-    	assertEquals(shouldHave+20-onHand, actual.get(0).quantity );
+    	final Order expectedOrder = new Order(item, 20 + shouldHave - onHand);
+    	final Set<Order> expected = Collections.singleton(expectedOrder);
+    	assertEquals(expected, new HashSet<>(actual));
+    	
     }
     
     @Test
@@ -257,7 +249,7 @@ public class InventoryTest {
     	final int shouldHave = 22;
     	final Season season = Season.Fall;
     	final boolean onSale = false;
-    	Item item = new StockedItem(shouldHave, season);
+    	Item item = new SeasonalItem(shouldHave, season);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -268,14 +260,14 @@ public class InventoryTest {
     			return Collections.singletonList(item);
     		}
     	};
-    	final MarketingTemplate mi = new MarketingTemplate(){
+    	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item){
     			return onSale;
     		}
     		@Override
     		public Season season(LocalDate when){
-    			return Season.Fall;
+    			return season;
     		}
     	};
     	final InventoryManager im = new AceInventoryManager(db, mi);
@@ -297,7 +289,7 @@ public class InventoryTest {
     	final int shouldHave = 15;
     	final Season season = Season.Fall;
     	final boolean onSale = true;
-    	Item item = new StockedItem(shouldHave, season);
+    	Item item = new StockedItem(shouldHave);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -308,7 +300,7 @@ public class InventoryTest {
     			return Collections.singletonList(item);
     		}
     	};
-    	final MarketingTemplate mi = new MarketingTemplate(){
+    	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item){
     			return onSale;
@@ -337,7 +329,7 @@ public class InventoryTest {
     	final int shouldHave = 25;
     	final Season season = Season.Fall;
     	final boolean onSale = true;
-    	Item item = new StockedItem(shouldHave, season);
+    	Item item = new SeasonalItem (shouldHave, season);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -348,7 +340,7 @@ public class InventoryTest {
     			return Collections.singletonList(item);
     		}
     	};
-    	final MarketingTemplate mi = new MarketingTemplate(){
+    	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item){
     			return onSale;
@@ -371,4 +363,54 @@ public class InventoryTest {
     }
     
     
+    
+    // ifOnSaleAndEqualToBaseInventoryQuantity
+    
+    // ifOnSaleAndLessThanBaseInventoryQuantity
+    
+    // ifOnSaleAndMoreThanBaseInventoryQuantity
+    
+    // ifOnSaleAndEqualToSaleInventoryQuantity
+    
+    // ifOnSaleAndLessThanSaleInventoryQuantityButMoreThanBase
+    
+    // ifOnSaleAndMoreThanSaleInventoryQuantity
+    
+    
+    //// ifInSeasonAndEqualToBaseInventoryQuantity
+    
+    // ifInSeasonAndLessThanBaseInventoryQuantity
+    
+    // ifInSeasonAndMoreThanBaseInventoryQuantity
+    
+    // ifInSeasonAndEqualToSaleInventoryQuantity
+    
+    // ifInSeasonAndLessThanSaleInventoryQuantityButMoreThanBase
+    
+    // ifInSeasonAndMoreThanSaleInventoryQuantity
+    
+    //// ifOnSaleAndInSeasonEqualToBaseInventoryQuantitySaleBetter
+    
+	 // ifOnSaleAndInSeasonLessThanBeaseInventoryQuantitySaleBetter
+	    
+	 // ifOnSaleAndInSeasonMoreThanBaseInventoryQuantitySaleBetter
+	    
+	 // ifOnSaleAndInSeasonEqualToBaseInventoryQuantitySeasonBetter
+	    
+	 // ifOnSaleAndInSeasonLessThanBeaseInventoryQuantitySeasonBetter
+	    
+	 // ifOnSaleAndInSeasonMoreThanBaseInventoryQuantitySeasonBetter
+    
+    
+    //// ifOnSaleAndInSeason
+	    
+	 // ifOnSaleAndInSeason
+    
+	 // ifOnSaleAndInSeason
+	 
+    // ifOnSaleAndInSeason
+	 
+    // ifOnSaleAndInSeason
+	 
+    // ifOnSaleAndInSeason
 }
