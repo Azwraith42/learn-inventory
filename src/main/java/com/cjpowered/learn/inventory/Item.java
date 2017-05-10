@@ -6,6 +6,8 @@ import java.util.Optional;
 import com.cjpowered.learn.marketing.MarketingInfo;
 
 public interface Item {
+	
+	boolean canOnlyBeOrderedOnFirstOfTheMonth();
 
 	Optional<Order> createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo);
 	

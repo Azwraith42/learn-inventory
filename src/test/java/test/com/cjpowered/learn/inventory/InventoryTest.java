@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -362,7 +363,67 @@ public class InventoryTest {
     	assertEquals( (shouldHave*2) - onHand, actual.get(0).quantity);
     }
     
+    @Test
+    public void doNotOrderIfNotFirstOfTheMonth(){
+    	//given
+    	final int onHand = 8;
+    	final int shouldHave = 15;
+    	final boolean canOnlyBeOrderedOnFirstOfTheMonth = true;
+    	Item item = new StockedItem(shouldHave, canOnlyBeOrderedOnFirstOfTheMonth);
+    	final HashMap<Item, Integer> store = new HashMap<>();
+    	store.put(item, onHand);
+    	final InventoryDatabase db = new FakeDatabase(store);
+    	final MarketingInfo mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return false;
+    		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate notFirst = LocalDate.of(2017, Month.JUNE, 2);
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(notFirst);
+    	
+    	//then
+    	assertTrue(actual.isEmpty());
+    }
     
+    @Test
+    public void orderEnoughBunchesToBringInventoryAboveWantOnHand(){
+    	//given
+    	final int onHand = 8;
+    	final int shouldHave = 15;
+    	final int ammountInABunch = 6;
+    	Item item = new StockedItem(shouldHave, ammountInABunch);
+    	final HashMap<Item, Integer> store = new HashMap<>();
+    	store.put(item, onHand);
+    	final InventoryDatabase db = new FakeDatabase(store);
+    	final MarketingInfo mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(final Item item){
+    			return false;
+    		}
+    		@Override
+    		public Season season(LocalDate when){
+    			return Season.Fall;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate notFirst = LocalDate.of(2017, Month.JUNE, 2);
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(notFirst);
+    	
+    	//then
+    	assertEquals(1, actual.size());
+    	assertEquals(item, actual.get(0).item);
+    	assertEquals( 12, actual.get(0).quantity);
+    }
     
     // ifOnSaleAndEqualToBaseInventoryQuantity
     

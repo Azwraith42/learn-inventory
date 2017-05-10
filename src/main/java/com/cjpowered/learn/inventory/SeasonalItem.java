@@ -10,10 +10,23 @@ public class SeasonalItem implements Item {
 
 	private final int wantOnHand;
 	private final Season season;
+	private final boolean canOnlyBeOrderedOnFirstOfTheMonth;
 	
 	public SeasonalItem(final int wantOnHand, final Season season){
 		this.wantOnHand = wantOnHand;
 		this.season = season;
+		this.canOnlyBeOrderedOnFirstOfTheMonth = false;
+	}
+	
+	public SeasonalItem(final int wantOnHand, final Season season, final boolean canOnlyBeOrderedOnFirstOfTheMonth){
+		this.wantOnHand = wantOnHand;
+		this.season = season;
+		this.canOnlyBeOrderedOnFirstOfTheMonth = canOnlyBeOrderedOnFirstOfTheMonth;
+	}
+	
+	@Override
+	public boolean canOnlyBeOrderedOnFirstOfTheMonth(){
+		return this.canOnlyBeOrderedOnFirstOfTheMonth;
 	}
 
 	@Override

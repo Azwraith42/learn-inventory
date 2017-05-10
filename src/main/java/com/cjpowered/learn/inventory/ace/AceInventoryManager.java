@@ -27,9 +27,11 @@ public final class AceInventoryManager implements InventoryManager {
     	 final List<Order> orders = new ArrayList<>();
     	 final List<Item> items = database.stockItems();
     	 for(Item item : items){
-    		 final Optional<Order> order = item.createOrder(today, database, marketingInfo);
-    		 if(order.isPresent()){
-    			 orders.add(order.get());
+    		 if(!item.canOnlyBeOrderedOnFirstOfTheMonth() || today.getDayOfMonth() == 1){
+	    		 final Optional<Order> order = item.createOrder(today, database, marketingInfo);
+	    		 if(order.isPresent()){
+	    			 orders.add(order.get());
+	    		 }
     		 }
     	 }
 
