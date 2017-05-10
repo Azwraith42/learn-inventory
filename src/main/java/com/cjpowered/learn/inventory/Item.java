@@ -5,6 +5,8 @@ package com.cjpowered.learn.inventory;
  * when you invoke {@link InventoryDatabase#stockItems()}
  *
  */
+import java.time.LocalDate;
+import java.util.Optional;
 
 import com.cjpowered.learn.marketing.MarketingInfo;
 
@@ -12,6 +14,6 @@ import java.time.LocalDate;
 
 public interface Item {
 
-	Order createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo);
+	Optional<Order> createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo);
 	
 }

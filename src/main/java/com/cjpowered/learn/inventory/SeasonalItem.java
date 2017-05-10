@@ -1,6 +1,7 @@
 package com.cjpowered.learn.inventory;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import com.cjpowered.learn.marketing.MarketingInfo;
 import com.cjpowered.learn.marketing.Season;
@@ -16,7 +17,8 @@ public class SeasonalItem implements Item {
 	}
 
 	@Override
-	public Order createOrder(final LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo) {
+	public Optional<Order> createOrder(final LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo) {
+		final Optional<Order> maybeOrder;
 		final int onHand = database.onHand(this);
 		final boolean inSeason = season.equals(marketingInfo.season(when));
 		final boolean onSale = marketingInfo.onSale(this);
@@ -30,7 +32,9 @@ public class SeasonalItem implements Item {
 		}else{
 			 toOrder = wantOnHand - onHand;
 		}
-		return new Order(this, toOrder);
+		
+		return (toOrder < 1) ?  Optional.empty() :  Optional.of(new Order(this, toOrder));
+		
 	}
 
 }
