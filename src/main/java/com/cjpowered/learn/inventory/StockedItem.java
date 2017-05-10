@@ -13,6 +13,8 @@ public class StockedItem implements Item {
 		this.wantOnHand = wantOnHand;
 	}
 	
+	
+	
 	@Override
 	public Optional<Order> createOrder(final LocalDate when, final InventoryDatabase database, final MarketingInfo marketingInfo){
 		final int onHand = database.onHand(this);

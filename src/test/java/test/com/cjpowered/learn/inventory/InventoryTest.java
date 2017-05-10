@@ -289,7 +289,7 @@ public class InventoryTest {
     	final int shouldHave = 15;
     	final Season season = Season.Fall;
     	final boolean onSale = true;
-    	Item item = new StockedItem(shouldHave);
+    	Item item = new SeasonalItem(shouldHave, season);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -307,7 +307,7 @@ public class InventoryTest {
     		}
     		@Override
     		public Season season(LocalDate when){
-    			return Season.Fall;
+    			return season;
     		}
     	};
     	final InventoryManager im = new AceInventoryManager(db, mi);
@@ -347,7 +347,7 @@ public class InventoryTest {
     		}
     		@Override
     		public Season season(LocalDate when){
-    			return Season.Fall;
+    			return season;
     		}
     	};
     	final InventoryManager im = new AceInventoryManager(db, mi);

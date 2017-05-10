@@ -18,7 +18,6 @@ public class SeasonalItem implements Item {
 
 	@Override
 	public Optional<Order> createOrder(final LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo) {
-		final Optional<Order> maybeOrder;
 		final int onHand = database.onHand(this);
 		final boolean inSeason = season.equals(marketingInfo.season(when));
 		final boolean onSale = marketingInfo.onSale(this);
