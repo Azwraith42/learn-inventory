@@ -36,9 +36,11 @@ public class StockedItem implements Item {
 	
 	@Override
 	public Optional<Order> createOrder(final LocalDate when, final InventoryDatabase database, final MarketingInfo marketingInfo){
-		final int onHand = database.onHand(this);
+		final int onOrder = database.onOrder(this);
+		final int onHand = database.onHand(this) + onOrder;
 		final boolean onSale = marketingInfo.onSale(this);
 		final int toOrder;
+		
 		if(onSale){
 			toOrder = wantOnHand + 20 - onHand;
 		}else{

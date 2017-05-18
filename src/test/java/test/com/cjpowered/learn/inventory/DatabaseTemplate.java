@@ -17,4 +17,8 @@ public class DatabaseTemplate implements InventoryDatabase {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
+    public int onOrder(Item item){
+    	throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

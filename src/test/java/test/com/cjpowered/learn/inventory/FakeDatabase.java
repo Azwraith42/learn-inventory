@@ -11,9 +11,11 @@ import com.cjpowered.learn.inventory.Item;
 public class FakeDatabase implements InventoryDatabase {
 
 	private final Map<Item, Integer> dataStore;
+	private final Map<Item, Integer> ordering;
 	
-	public FakeDatabase(Map<Item, Integer> dataStore){
+	public FakeDatabase(final Map<Item, Integer> dataStore, final Map<Item, Integer> ordering){
 		this.dataStore = dataStore;
+		this.ordering = ordering;
 	}
 	
 	@Override
@@ -25,6 +27,11 @@ public class FakeDatabase implements InventoryDatabase {
 	public List<Item> stockItems() {
 		final Set<Item> keys = dataStore.keySet();
 		return new ArrayList<>(keys);
+	}
+	
+	@Override
+	public int onOrder(Item item){
+		return ordering.get(item);
 	}
 
 }

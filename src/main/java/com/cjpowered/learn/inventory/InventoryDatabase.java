@@ -36,5 +36,16 @@ public interface InventoryDatabase {
      * @return fetched value
      */
     List<Item> stockItems();
+    
+    /**
+     * Fetch the number on order.
+     * 
+     * @param item
+     *            item to query. The item instance must have been returned by
+     *            the same implementation on which this method is called.
+     *
+     * @return fetched value
+     */
+    int onOrder(Item item);
 
 }

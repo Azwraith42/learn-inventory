@@ -11,17 +11,27 @@ public class SeasonalItem implements Item {
 	private final int wantOnHand;
 	private final Season season;
 	private final boolean canOnlyBeOrderedOnFirstOfTheMonth;
+	private final int ammountInABunch;
 	
 	public SeasonalItem(final int wantOnHand, final Season season){
 		this.wantOnHand = wantOnHand;
 		this.season = season;
 		this.canOnlyBeOrderedOnFirstOfTheMonth = false;
+		this.ammountInABunch = 1;
 	}
 	
 	public SeasonalItem(final int wantOnHand, final Season season, final boolean canOnlyBeOrderedOnFirstOfTheMonth){
 		this.wantOnHand = wantOnHand;
 		this.season = season;
 		this.canOnlyBeOrderedOnFirstOfTheMonth = canOnlyBeOrderedOnFirstOfTheMonth;
+		this.ammountInABunch = 1;
+	}
+	
+	public SeasonalItem(final int wantOnHand, final Season season, final int ammountInABunch){
+		this.wantOnHand = wantOnHand;
+		this.season = season;
+		this.canOnlyBeOrderedOnFirstOfTheMonth = false;
+		this.ammountInABunch = ammountInABunch;
 	}
 	
 	@Override
@@ -45,7 +55,12 @@ public class SeasonalItem implements Item {
 			 toOrder = wantOnHand - onHand;
 		}
 		
-		return (toOrder < 1) ?  Optional.empty() :  Optional.of(new Order(this, toOrder));
+		if(ammountInABunch == 1 || toOrder % ammountInABunch == 0){
+			return (toOrder < 1) ? Optional.empty() : Optional.of(new Order(this, toOrder));
+		}else{
+			final int numberOfBunches = (int)Math.ceil((float)toOrder / (float)ammountInABunch);
+			return (toOrder < 1) ? Optional.empty() : Optional.of(new Order(this, numberOfBunches*ammountInABunch));
+		}
 		
 	}
 
