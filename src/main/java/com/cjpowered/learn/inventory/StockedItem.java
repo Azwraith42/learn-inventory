@@ -37,14 +37,15 @@ public class StockedItem implements Item {
 	@Override
 	public Optional<Order> createOrder(final LocalDate when, final InventoryDatabase database, final MarketingInfo marketingInfo){
 		final int onOrder = database.onOrder(this);
-		final int onHand = database.onHand(this) + onOrder;
+		final int onHand = database.onHand(this);
+		final int total = onHand + onOrder;
 		final boolean onSale = marketingInfo.onSale(this);
 		final int toOrder;
 		
 		if(onSale){
-			toOrder = wantOnHand + 20 - onHand;
+			toOrder = wantOnHand + 20 - total;
 		}else{
-			 toOrder = wantOnHand - onHand;
+			 toOrder = wantOnHand - total;
 		}
 		
 		if(ammountInABunch == 1 || toOrder % ammountInABunch == 0){
