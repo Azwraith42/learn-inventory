@@ -31,7 +31,11 @@ public class FakeDatabase implements InventoryDatabase {
 	
 	@Override
 	public int onOrder(Item item){
-		return ordering.get(item);
+		if(ordering.containsKey(item)){
+			return ordering.get(item);
+		}else{
+			return 0;
+		}
 	}
 
 }
