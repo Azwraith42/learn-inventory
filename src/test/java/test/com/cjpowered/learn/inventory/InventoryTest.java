@@ -278,6 +278,14 @@ public class InventoryTest {
     		public List<Item> stockItems() {
     			return Collections.singletonList(item);
     		}
+    		@Override
+    		public int onOrder(Item item) {
+    			return 0;
+    		}
+    		@Override
+    		public void setRequiredOnHand(Item item, int newAmount) {
+    			// TODO Auto-generated method stub
+    		}
     	};
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
@@ -318,6 +326,14 @@ public class InventoryTest {
     		public List<Item> stockItems() {
     			return Collections.singletonList(item);
     		}
+    		@Override
+    		public int onOrder(Item item) {
+    			return 0;
+    		}
+    		@Override
+    		public void setRequiredOnHand(Item item, int newAmount) {
+    			// TODO Auto-generated method stub
+    		}
     	};
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
@@ -357,6 +373,14 @@ public class InventoryTest {
 			@Override
 			public List<Item> stockItems() {
 				return Collections.singletonList(item);
+			}
+			@Override
+			public int onOrder(Item item) {
+				return 0;
+			}
+			@Override
+			public void setRequiredOnHand(Item item, int newAmount) {
+				// TODO Auto-generated method stub
 			}
 		};
 		final MarketingInfo mi = new MarketingTemplate(){
@@ -470,7 +494,7 @@ public class InventoryTest {
     		}
     		@Override
     		public Season season(LocalDate when){
-    			return Season.Fall;
+    			return season;
     		}
     	};
     	final InventoryManager im = new AceInventoryManager(db, mi);
@@ -505,6 +529,39 @@ public class InventoryTest {
     		@Override
     		public Season season(LocalDate when) {
     			return Season.Fall;
+    		};
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    public void doNotOrderSeasonalItemIfAlreadyOnOrder(){
+    	//given
+    	final int onHand = 5;
+    	final int shouldHave = 10;
+    	final int onOrder = 15;
+    	final Season season = Season.Fall;
+    	Item item = new SeasonalItem(shouldHave, season);
+    	final HashMap<Item, Integer> store = new HashMap<>();
+    	store.put(item,  onHand);
+    	final HashMap<Item, Integer> ordering = new HashMap<>();
+    	ordering.put(item, onOrder);
+    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+    	final MarketingInfo mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(Item item) {
+    			return false;
+    		};
+    		@Override
+    		public Season season(LocalDate when) {
+    			return season;
     		};
     	};
     	final InventoryManager im = new AceInventoryManager(db, mi);

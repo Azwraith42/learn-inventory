@@ -44,15 +44,17 @@ public class SeasonalItem implements Item {
 		final int onHand = database.onHand(this);
 		final boolean inSeason = season.equals(marketingInfo.season(when));
 		final boolean onSale = marketingInfo.onSale(this);
+		final int onOrder = database.onOrder(this);
+		final int total = onHand + onOrder;
 		final int toOrder;
 		if(inSeason){
 			if(onSale && wantOnHand < 20){
-				toOrder = (20+wantOnHand) - onHand;
+				toOrder = (20+wantOnHand) - total;
 			}else{
-				toOrder = (wantOnHand*2) - onHand;
+				toOrder = (wantOnHand*2) - total;
 			}
 		}else{
-			 toOrder = wantOnHand - onHand;
+			 toOrder = wantOnHand - total;
 		}
 		
 		if(ammountInABunch == 1 || toOrder % ammountInABunch == 0){
