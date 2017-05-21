@@ -47,13 +47,18 @@ public class SeasonalItem implements Item {
 		final int onOrder = database.onOrder(this);
 		final int total = onHand + onOrder;
 		final int toOrder;
+		
+		
 		if(inSeason){
 			if(onSale && wantOnHand < 20){
+				if( (float)(onHand+onOrder)/(float)(wantOnHand+20) > 0.80){return Optional.empty();}
 				toOrder = (20+wantOnHand) - total;
 			}else{
+				if( (float)(onHand+onOrder)/(float)(wantOnHand*2) > 0.80){return Optional.empty();}
 				toOrder = (wantOnHand*2) - total;
 			}
 		}else{
+			if( (float)(onHand+onOrder)/(float)(wantOnHand) > 0.80){return Optional.empty();}
 			 toOrder = wantOnHand - total;
 		}
 		
@@ -61,6 +66,9 @@ public class SeasonalItem implements Item {
 			return (toOrder < 1) ? Optional.empty() : Optional.of(new Order(this, toOrder));
 		}else{
 			final int numberOfBunches = (int)Math.ceil((float)toOrder / (float)ammountInABunch);
+			if( (numberOfBunches*ammountInABunch) + total > wantOnHand ){
+				return (numberOfBunches == 1) ? Optional.empty() : Optional.of(new Order(this, (numberOfBunches-1)*ammountInABunch ));
+			}
 			return (toOrder < 1) ? Optional.empty() : Optional.of(new Order(this, numberOfBunches*ammountInABunch));
 		}
 		

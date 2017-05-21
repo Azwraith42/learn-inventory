@@ -43,8 +43,10 @@ public class StockedItem implements Item {
 		final int toOrder;
 		
 		if(onSale){
+			if( (float)(onHand+onOrder)/(float)(wantOnHand+20) > 0.80){return Optional.empty();}
 			toOrder = wantOnHand + 20 - total;
 		}else{
+			if( (float)(onHand+onOrder)/(float)(wantOnHand) > 0.80){return Optional.empty();}
 			 toOrder = wantOnHand - total;
 		}
 		
@@ -52,6 +54,9 @@ public class StockedItem implements Item {
 			return (toOrder < 1) ? Optional.empty() : Optional.of(new Order(this, toOrder));
 		}else{
 			final int numberOfBunches = (int)Math.ceil((float)toOrder / (float)ammountInABunch);
+			if( (numberOfBunches*ammountInABunch) + total > wantOnHand ){
+				return (numberOfBunches == 1) ? Optional.empty() : Optional.of(new Order(this, (numberOfBunches-1)*ammountInABunch ));
+			}
 			return (toOrder < 1) ? Optional.empty() : Optional.of(new Order(this, numberOfBunches*ammountInABunch));
 		}
 		
