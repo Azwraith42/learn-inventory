@@ -108,7 +108,7 @@ any orders for those items except on the first of the month
 can stock more than the normal inventory level for those items if necessary
 
 Override #3. never stock more than the normal level, even for multi-unit purchases
-we do not order if we have over 80% on hand
+we do not order if we have over 80% on hand+on order
 we add 10% to the normal level if we ever run out of an item.
 
 

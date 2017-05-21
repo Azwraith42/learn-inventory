@@ -439,7 +439,7 @@ public class InventoryTest {
     }
     
     @Test
-    public void orderEnoughBunchesToBringInventoryAboveWantOnHand(){
+    public void doNotOrderBunchesIfItWillBringUsAboveWantOnHand(){
     	//given
     	final int onHand = 8;
     	final int shouldHave = 15;
@@ -470,11 +470,11 @@ public class InventoryTest {
     	//then
     	assertEquals(1, actual.size());
     	assertEquals(item, actual.get(0).item);
-    	assertEquals( 12, actual.get(0).quantity);
+    	assertEquals( 6, actual.get(0).quantity);
     }
     
     @Test
-    public void orderEnoughSaleItemBunchesToBringInventoryAboveWantOnHand(){
+    public void doNotOrderBunchesOfSeasonalItemsIfItWillBringUsAboveWantOnHand(){
     	//given
     	final int onHand = 8;
     	final int shouldHave = 15;
@@ -506,7 +506,7 @@ public class InventoryTest {
     	//then
     	assertEquals(1, actual.size());
     	assertEquals(item, actual.get(0).item);
-    	assertEquals( 24, actual.get(0).quantity);
+    	assertEquals( 18, actual.get(0).quantity);
     }
     
     @Test
@@ -572,6 +572,71 @@ public class InventoryTest {
     	
     	//then
         assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    public void doNotOrderIfWeHaveOverEightyPercent(){
+    	//given
+    	final int onHand = 9;
+    	final int shouldHave = 10;
+    	final int onOrder = 0;
+    	Item item = new StockedItem(shouldHave);
+    	final HashMap<Item, Integer> store = new HashMap<>();
+    	store.put(item, onHand);
+    	final HashMap<Item, Integer> ordering = new HashMap<>();
+    	ordering.put(item, onOrder);
+    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+    	final MarketingInfo mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(Item item) {
+    			return false;
+    		};
+    		@Override
+    		public Season season(LocalDate when) {
+    			return Season.Fall;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+    	assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    public void doNotOrderSeasonalIfWeHaveOverEightyPercent(){
+    	//given
+    	final int onHand = 36;
+    	final int shouldHave = 20;
+    	final int onOrder = 0;
+    	final Season season = Season.Winter;
+    	Item item = new SeasonalItem(shouldHave, season);
+    	final HashMap<Item, Integer> store = new HashMap<>();
+    	store.put(item, onHand);
+    	final HashMap<Item, Integer> ordering = new HashMap<>();
+    	ordering.put(item, onOrder);
+    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+    	final MarketingInfo mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(Item item) {
+    			return false;
+    		};
+    		@Override
+    		public Season season(LocalDate when) {
+    			return season;
+    		}
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+    	assertTrue(actual.isEmpty());
     }
     
 }
