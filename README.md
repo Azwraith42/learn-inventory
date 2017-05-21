@@ -84,12 +84,12 @@ or other reason, use the highest calculated level. In other words, modifiers
 do not stack
 4. Some items can only be ordered on the first day of the month, do not issue
 any orders for those items except on the first of the month
-5. Some items can only be ordered in packages containing multiple units. we
-can stock more than the normal inventory level for those items if necessary
-
-Override #3. never stock more than the normal level, even for multi-unit purchases
+5. Some items can only be ordered in packages containing multiple units. ~~we
+can stock more than the normal inventory level for those items if necessary~~
+never stock more than the normal level, even for multi-unit purchases
 we do not order if we have over 80% on hand+on order
+
 we add 10% to the normal level if we ever run out of an item.
 
 
-if onHand < ammount in a package, make sure 1 package is on hand 
+if onHand < amount in a package, make sure 1 package is on hand 
