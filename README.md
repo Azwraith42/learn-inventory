@@ -86,7 +86,7 @@ do not stack
 any orders for those items except on the first of the month
 5. Some items can only be ordered in packages containing multiple units. ~~we
 can stock more than the normal inventory level for those items if necessary~~
-never stock more than the normal level, even for multi-unit purchases
+Never stock more than the normal level, even for multi-unit purchases
 6. We do not order if we have over 80% on hand+on order
 7. We add 10% to the normal level if we ever run out of an item.
 

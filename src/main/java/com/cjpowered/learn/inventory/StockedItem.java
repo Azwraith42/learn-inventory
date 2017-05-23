@@ -7,7 +7,7 @@ import com.cjpowered.learn.marketing.MarketingInfo;
 
 public class StockedItem implements Item {
 	
-	private final int wantOnHand;
+	private int wantOnHand;
 	private final boolean canOnlyBeOrderedOnFirstOfTheMonth;
 	private final int ammountInABunch;
 	
@@ -35,6 +35,17 @@ public class StockedItem implements Item {
 	}
 	
 	@Override
+	public int getShouldHave() {
+		return wantOnHand;
+	}
+	
+	@Override
+	public void setRequiredOnHand(int newAmount) {
+		wantOnHand = newAmount;
+		
+	}
+	
+	@Override
 	public Optional<Order> createOrder(final LocalDate when, final InventoryDatabase database, final MarketingInfo marketingInfo){
 		final int onOrder = database.onOrder(this);
 		final int onHand = database.onHand(this);
@@ -42,11 +53,19 @@ public class StockedItem implements Item {
 		final boolean onSale = marketingInfo.onSale(this);
 		final int toOrder;
 		
+		if(total == 0){
+			final int increaseBy;
+			
+			increaseBy = (int) (wantOnHand*1.1);
+			
+			database.setRequiredOnHand(this, increaseBy);
+		}
+		
 		if(onSale){
-			if( (float)(onHand+onOrder)/(float)(wantOnHand+20) > 0.80){return Optional.empty();}
+			if( (float)(total)/(float)(wantOnHand+20) > 0.80){return Optional.empty();}
 			toOrder = wantOnHand + 20 - total;
 		}else{
-			if( (float)(onHand+onOrder)/(float)(wantOnHand) > 0.80){return Optional.empty();}
+			if( (float)(total)/(float)(wantOnHand) > 0.80){return Optional.empty();}
 			 toOrder = wantOnHand - total;
 		}
 		

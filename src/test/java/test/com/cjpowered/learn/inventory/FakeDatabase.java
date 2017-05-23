@@ -40,7 +40,7 @@ public class FakeDatabase implements InventoryDatabase {
 	
 	@Override
 	public void setRequiredOnHand(Item item, int newAmount) {
-		// TODO Auto-generated method stub
+		item.setRequiredOnHand(newAmount);
 		
 	}
 
