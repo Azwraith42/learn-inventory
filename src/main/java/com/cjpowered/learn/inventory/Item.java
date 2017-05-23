@@ -15,6 +15,10 @@ import java.time.LocalDate;
 public interface Item {
 	
 	boolean canOnlyBeOrderedOnFirstOfTheMonth();
+	
+	int getShouldHave();
+	
+	void setRequiredOnHand(int newAmount);
 
 	Optional<Order> createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo);
 	

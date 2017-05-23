@@ -8,7 +8,7 @@ import com.cjpowered.learn.marketing.Season;
 
 public class SeasonalItem implements Item {
 
-	private final int wantOnHand;
+	private int wantOnHand;
 	private final Season season;
 	private final boolean canOnlyBeOrderedOnFirstOfTheMonth;
 	private final int ammountInABunch;
@@ -38,6 +38,16 @@ public class SeasonalItem implements Item {
 	public boolean canOnlyBeOrderedOnFirstOfTheMonth(){
 		return this.canOnlyBeOrderedOnFirstOfTheMonth;
 	}
+	
+	@Override
+	public int getShouldHave() {
+		return wantOnHand;
+	}
+	
+	@Override
+	public void setRequiredOnHand(int newAmount) {
+		wantOnHand = newAmount;
+	}
 
 	@Override
 	public Optional<Order> createOrder(final LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo) {
@@ -48,6 +58,13 @@ public class SeasonalItem implements Item {
 		final int total = onHand + onOrder;
 		final int toOrder;
 		
+		if(total == 0){
+			final int increaseBy;
+			
+			increaseBy = (int) (wantOnHand*1.1);;
+			
+			database.setRequiredOnHand(this, increaseBy);
+		}
 		
 		if(inSeason){
 			if(onSale && wantOnHand < 20){
