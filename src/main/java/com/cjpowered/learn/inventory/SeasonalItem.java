@@ -59,24 +59,23 @@ public class SeasonalItem implements Item {
 		final int toOrder;
 		
 		if(total == 0){
-			final int increaseBy;
-			
-			increaseBy = (int) (wantOnHand*1.1);;
-			
-			database.setRequiredOnHand(this, increaseBy);
+			final int newAmount;
+			newAmount = (int) (wantOnHand*1.1);;
+			database.setRequiredOnHand(this, newAmount);
 		}
 		
 		if(inSeason){
 			if(onSale && wantOnHand < 20){
-				if( (float)(onHand+onOrder)/(float)(wantOnHand+20) > 0.80){return Optional.empty();}
+				if( (float)(total)/(float)(wantOnHand+20) > 0.80){return Optional.empty();}
 				toOrder = (20+wantOnHand) - total;
 			}else{
-				if( (float)(onHand+onOrder)/(float)(wantOnHand*2) > 0.80){return Optional.empty();}
+				if( (float)(total)/(float)(wantOnHand*2) > 0.80){return Optional.empty();}
 				toOrder = (wantOnHand*2) - total;
 			}
 		}else{
 			if( (float)(onHand+onOrder)/(float)(wantOnHand) > 0.80){return Optional.empty();}
 			 toOrder = wantOnHand - total;
+			 
 		}
 		
 		if(ammountInABunch == 1 || toOrder % ammountInABunch == 0){

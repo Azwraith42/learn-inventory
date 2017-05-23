@@ -54,11 +54,11 @@ public class StockedItem implements Item {
 		final int toOrder;
 		
 		if(total == 0){
-			final int increaseBy;
+			final int newAmount;
 			
-			increaseBy = (int) (wantOnHand*1.1);
+			newAmount = (int) (wantOnHand*1.1);
 			
-			database.setRequiredOnHand(this, increaseBy);
+			database.setRequiredOnHand(this, newAmount);
 		}
 		
 		if(onSale){
