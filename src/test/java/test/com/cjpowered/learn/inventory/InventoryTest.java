@@ -13,10 +13,13 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.cjpowered.learn.inventory.AnyDay;
+import com.cjpowered.learn.inventory.FirstOfTheMonth;
 import com.cjpowered.learn.inventory.InventoryDatabase;
 import com.cjpowered.learn.inventory.InventoryManager;
 import com.cjpowered.learn.inventory.Item;
 import com.cjpowered.learn.inventory.Order;
+import com.cjpowered.learn.inventory.Schedule;
 import com.cjpowered.learn.inventory.SeasonalItem;
 import com.cjpowered.learn.inventory.StockedItem;
 import com.cjpowered.learn.inventory.ace.AceInventoryManager;
@@ -68,7 +71,8 @@ public class InventoryTest {
     	final int onHand = 10;
     	final int shouldHave = 16;
     	final int onOrder = 0;
-    	Item item = new StockedItem(shouldHave);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -104,7 +108,8 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = 9;
-    	Item item = new StockedItem(shouldHave);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -145,7 +150,8 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = onHand;
-    	Item item = new StockedItem(shouldHave);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -186,7 +192,8 @@ public class InventoryTest {
     	// given
     	final int onHand = 10;
     	final int shouldHave = 9;
-    	Item item = new StockedItem(shouldHave);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -232,7 +239,8 @@ public class InventoryTest {
     	final int shouldHave = 15;
     	final boolean onSale = true;
     	final int onOrder = 0;
-    	Item item = new StockedItem(shouldHave);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -268,7 +276,8 @@ public class InventoryTest {
     	final int shouldHave = 15;
     	final Season season = Season.Fall;
     	final boolean onSale = true;
-    	Item item = new SeasonalItem(shouldHave, season);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new SeasonalItem(shouldHave, season, schedule);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -316,7 +325,8 @@ public class InventoryTest {
     	final int shouldHave = 25;
     	final Season season = Season.Fall;
     	final boolean onSale = true;
-    	Item item = new SeasonalItem (shouldHave, season);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new SeasonalItem (shouldHave, season, schedule);
     	final InventoryDatabase db = new DatabaseTemplate(){
     		@Override
     		public int onHand(Item item) {
@@ -364,7 +374,8 @@ public class InventoryTest {
 		final int shouldHave = 22;
 		final Season season = Season.Fall;
 		final boolean onSale = false;
-		Item item = new SeasonalItem(shouldHave, season);
+		final Schedule schedule = new AnyDay();
+		Item item = new SeasonalItem(shouldHave, season, schedule);
 		final InventoryDatabase db = new DatabaseTemplate(){
 			@Override
 			public int onHand(Item item) {
@@ -411,8 +422,8 @@ public class InventoryTest {
     	final int onHand = 8;
     	final int shouldHave = 15;
     	final int onOrder = 0;
-    	final boolean canOnlyBeOrderedOnFirstOfTheMonth = true;
-    	Item item = new StockedItem(shouldHave, canOnlyBeOrderedOnFirstOfTheMonth);
+    	final Schedule schedule = new FirstOfTheMonth();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -445,7 +456,8 @@ public class InventoryTest {
     	final int shouldHave = 15;
     	final int ammountInABunch = 6;
     	final int onOrder = 0;
-    	Item item = new StockedItem(shouldHave, ammountInABunch);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule, ammountInABunch);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -480,8 +492,9 @@ public class InventoryTest {
     	final int shouldHave = 15;
     	final int ammountInABunch = 6;
     	final int onOrder = 0;
+    	final Schedule schedule = new AnyDay();
     	final Season season = Season.Fall;
-    	Item item = new SeasonalItem(shouldHave, season, ammountInABunch);
+    	Item item = new SeasonalItem(shouldHave, season, schedule, ammountInABunch);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -515,7 +528,8 @@ public class InventoryTest {
     	final int onHand = 5;
     	final int shouldHave = 10;
     	final int onOrder = 5;
-    	Item item = new StockedItem(shouldHave);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -547,8 +561,9 @@ public class InventoryTest {
     	final int onHand = 5;
     	final int shouldHave = 10;
     	final int onOrder = 15;
+    	final Schedule schedule = new AnyDay();
     	final Season season = Season.Fall;
-    	Item item = new SeasonalItem(shouldHave, season);
+    	Item item = new SeasonalItem(shouldHave, season, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -580,7 +595,8 @@ public class InventoryTest {
     	final int onHand = 9;
     	final int shouldHave = 10;
     	final int onOrder = 0;
-    	Item item = new StockedItem(shouldHave);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -612,8 +628,9 @@ public class InventoryTest {
     	final int onHand = 36;
     	final int shouldHave = 20;
     	final int onOrder = 0;
+    	final Schedule schedule = new AnyDay();
     	final Season season = Season.Winter;
-    	Item item = new SeasonalItem(shouldHave, season);
+    	Item item = new SeasonalItem(shouldHave, season, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -645,7 +662,8 @@ public class InventoryTest {
     	final int onHand = 0;
     	final int shouldHave = 10;
     	final int onOrder = 0;
-    	Item item = new StockedItem(shouldHave);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -677,8 +695,9 @@ public class InventoryTest {
     	final int onHand = 0;
     	final int shouldHave = 10;
     	final int onOrder = 0;
+    	final Schedule schedule = new AnyDay();
     	final Season season = Season.Winter;
-    	Item item = new SeasonalItem(shouldHave, season);
+    	Item item = new SeasonalItem(shouldHave, season, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -710,7 +729,8 @@ public class InventoryTest {
     	final int onHand = 0;
     	final int shouldHave = 19;
     	final int onOrder = 0;
-    	Item item = new StockedItem(shouldHave);
+    	final Schedule schedule = new AnyDay();
+    	Item item = new StockedItem(shouldHave, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
@@ -742,8 +762,9 @@ public class InventoryTest {
     	final int onHand = 0;
     	final int shouldHave = 19;
     	final int onOrder = 0;
+    	final Schedule schedule = new AnyDay();
     	final Season season = Season.Winter;
-    	Item item = new SeasonalItem(shouldHave, season);
+    	Item item = new SeasonalItem(shouldHave, season, schedule);
     	final HashMap<Item, Integer> store = new HashMap<>();
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();

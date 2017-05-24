@@ -14,7 +14,7 @@ import java.time.LocalDate;
 
 public interface Item {
 	
-	boolean canOnlyBeOrderedOnFirstOfTheMonth();
+	boolean canOrder(LocalDate today);
 	
 	int getShouldHave();
 	
