@@ -704,4 +704,69 @@ public class InventoryTest {
     	assertEquals(11, item.getShouldHave());
     }
     
+    @Test
+    public void ifWeRunOutIncreaseOnHandByTenPercentRoundedUp(){
+    	//given
+    	final int onHand = 0;
+    	final int shouldHave = 19;
+    	final int onOrder = 0;
+    	Item item = new StockedItem(shouldHave);
+    	final HashMap<Item, Integer> store = new HashMap<>();
+    	store.put(item,  onHand);
+    	final HashMap<Item, Integer> ordering = new HashMap<>();
+    	ordering.put(item, onOrder);
+    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+    	final MarketingInfo mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(Item item){
+    			return false;
+    		}
+    		@Override
+    		public Season season(LocalDate when) {
+    			return Season.Fall;
+    		};
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+    	assertEquals(21, item.getShouldHave());
+    }
+    
+    @Test
+    public void ifWeRunOutOfSeasonalIncreaseOnHandByTenPercentRoundedUp(){
+    	//given
+    	final int onHand = 0;
+    	final int shouldHave = 19;
+    	final int onOrder = 0;
+    	final Season season = Season.Winter;
+    	Item item = new SeasonalItem(shouldHave, season);
+    	final HashMap<Item, Integer> store = new HashMap<>();
+    	store.put(item,  onHand);
+    	final HashMap<Item, Integer> ordering = new HashMap<>();
+    	ordering.put(item, onOrder);
+    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+    	final MarketingInfo mi = new MarketingTemplate(){
+    		@Override
+    		public boolean onSale(Item item){
+    			return false;
+    		}
+    		@Override
+    		public Season season(LocalDate when) {
+    			return season;
+    		};
+    	};
+    	final InventoryManager im = new AceInventoryManager(db, mi);
+    	final LocalDate today = LocalDate.now();
+    	
+    	//when
+    	final List<Order> actual = im.getOrders(today);
+    	
+    	//then
+    	assertEquals(21, item.getShouldHave());
+    }
+    
 }

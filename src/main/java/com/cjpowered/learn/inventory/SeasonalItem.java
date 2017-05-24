@@ -60,7 +60,7 @@ public class SeasonalItem implements Item {
 		
 		if(total == 0){
 			final int newAmount;
-			newAmount = (int) (wantOnHand*1.1);;
+			newAmount = (int) Math.ceil(wantOnHand*1.1);
 			database.setRequiredOnHand(this, newAmount);
 		}
 		
