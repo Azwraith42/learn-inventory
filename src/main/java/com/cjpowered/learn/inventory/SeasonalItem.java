@@ -10,33 +10,26 @@ public class SeasonalItem implements Item {
 
 	private int wantOnHand;
 	private final Season season;
-	private final boolean canOnlyBeOrderedOnFirstOfTheMonth;
+	private final Schedule schedule;
 	private final int ammountInABunch;
 	
-	public SeasonalItem(final int wantOnHand, final Season season){
+	public SeasonalItem(final int wantOnHand, final Season season, final Schedule schedule){
 		this.wantOnHand = wantOnHand;
 		this.season = season;
-		this.canOnlyBeOrderedOnFirstOfTheMonth = false;
+		this.schedule = schedule;
 		this.ammountInABunch = 1;
 	}
 	
-	public SeasonalItem(final int wantOnHand, final Season season, final boolean canOnlyBeOrderedOnFirstOfTheMonth){
+	public SeasonalItem(final int wantOnHand, final Season season, final Schedule schedule, final int ammountInABunch){
 		this.wantOnHand = wantOnHand;
 		this.season = season;
-		this.canOnlyBeOrderedOnFirstOfTheMonth = canOnlyBeOrderedOnFirstOfTheMonth;
-		this.ammountInABunch = 1;
-	}
-	
-	public SeasonalItem(final int wantOnHand, final Season season, final int ammountInABunch){
-		this.wantOnHand = wantOnHand;
-		this.season = season;
-		this.canOnlyBeOrderedOnFirstOfTheMonth = false;
+		this.schedule = schedule;
 		this.ammountInABunch = ammountInABunch;
 	}
 	
 	@Override
-	public boolean canOnlyBeOrderedOnFirstOfTheMonth(){
-		return this.canOnlyBeOrderedOnFirstOfTheMonth;
+	public boolean canOrder(LocalDate today){
+		return schedule.canOrderToday(today);
 	}
 	
 	@Override

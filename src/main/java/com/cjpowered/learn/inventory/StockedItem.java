@@ -8,30 +8,24 @@ import com.cjpowered.learn.marketing.MarketingInfo;
 public class StockedItem implements Item {
 	
 	private int wantOnHand;
-	private final boolean canOnlyBeOrderedOnFirstOfTheMonth;
 	private final int ammountInABunch;
+	private final Schedule schedule;
 	
-	public StockedItem(final int wantOnHand){
+	public StockedItem(final int wantOnHand, final Schedule schedule){
 		this.wantOnHand = wantOnHand;
-		this.canOnlyBeOrderedOnFirstOfTheMonth = false;
+		this.schedule = schedule;
 		this.ammountInABunch = 1;
 	}
 	
-	public StockedItem(final int wantOnHand, final boolean canOnlyBeOrderedOnFirstOfTheMonth){
+	public StockedItem(final int wantOnHand,final Schedule schedule, final int ammountInABunch){
 		this.wantOnHand = wantOnHand;
-		this.canOnlyBeOrderedOnFirstOfTheMonth = canOnlyBeOrderedOnFirstOfTheMonth;
-		this.ammountInABunch = 1;
-	}
-	
-	public StockedItem(final int wantOnHand, final int ammountInABunch){
-		this.wantOnHand = wantOnHand;
-		this.canOnlyBeOrderedOnFirstOfTheMonth = false;
+		this.schedule = schedule;
 		this.ammountInABunch = ammountInABunch;
 	}
 	
 	@Override
-	public boolean canOnlyBeOrderedOnFirstOfTheMonth(){
-		return this.canOnlyBeOrderedOnFirstOfTheMonth;
+	public boolean canOrder(LocalDate today){
+		return schedule.canOrderToday(today);
 	}
 	
 	@Override

@@ -7,7 +7,7 @@ import com.cjpowered.learn.marketing.MarketingInfo;
 
 public interface Item {
 	
-	boolean canOnlyBeOrderedOnFirstOfTheMonth();
+	boolean canOrder(LocalDate today);
 	
 	int getShouldHave();
 	
