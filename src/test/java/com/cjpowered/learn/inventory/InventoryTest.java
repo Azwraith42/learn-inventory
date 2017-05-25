@@ -5,23 +5,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import com.cjpowered.learn.inventory.*;
 import org.junit.Test;
 
-import com.cjpowered.learn.inventory.AnyDay;
-import com.cjpowered.learn.inventory.FirstOfTheMonth;
-import com.cjpowered.learn.inventory.InventoryDatabase;
-import com.cjpowered.learn.inventory.InventoryManager;
-import com.cjpowered.learn.inventory.Item;
-import com.cjpowered.learn.inventory.Order;
-import com.cjpowered.learn.inventory.Schedule;
-import com.cjpowered.learn.inventory.SeasonalItem;
-import com.cjpowered.learn.inventory.StockedItem;
 import com.cjpowered.learn.inventory.ace.AceInventoryManager;
 import com.cjpowered.learn.marketing.MarketingInfo;
 import com.cjpowered.learn.marketing.Season;
@@ -789,5 +777,39 @@ public class InventoryTest {
     	//then
     	assertEquals(21, item.getShouldHave());
     }
+
+    @Test
+	public void orderFromOtherWarehouses(){
+    	//given
+		final Map<Warehouse, Integer> onHand = new HashMap<>();
+		onHand.put(Warehouse.Ashford, 5);
+		final Map<Warehouse, Integer> shouldHave = new HashMap<>();
+		shouldHave.put(Warehouse.Ashford, 15);
+		final Map<Warehouse, Integer> onOrder = new HashMap<>();
+		onOrder.put(Warehouse.Ashford, 0);
+		final Schedule schedule = new AnyDay();
+		final Item item = new StockedItem(shouldHave, schedule);
+		final HashMap<Item, Integer> store = new HashMap<>();
+		store.put(item,  onHand);
+		final HashMap<Item, Integer> ordering = new HashMap<>();
+		ordering.put(item, onOrder);
+		final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final MarketingInfo mi = new MarketingTemplate(){
+			@Override
+			public boolean onSale(Item item, final LocalDate when){
+				return false;
+			}
+			@Override
+			public Season season(LocalDate when) {
+				return season;
+			};
+		};
+		final LocalDate today = LocalDate.now();
+
+		//when
+		final List<Order> actual = im.getOrders(today);
+
+		//then
+	}
     
 }
