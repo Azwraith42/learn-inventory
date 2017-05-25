@@ -1,63 +1,65 @@
-package test.com.cjpowered.learn.inventory;
+package com.cjpowered.learn.inventory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Table;
 
-import com.cjpowered.learn.inventory.InventoryDatabase;
-import com.cjpowered.learn.inventory.Item;
-import com.cjpowered.learn.inventory.Warehouse;
+import java.util.*;
 
 public class FakeDatabase implements InventoryDatabase {
 
-	private final Map<Item, Integer> dataStore;
-	private final Map<Item, Integer> ordering;
-	
-	public FakeDatabase(final Map<Item, Integer> dataStore, final Map<Item, Integer> ordering){
-		this.dataStore = dataStore;
-		this.ordering = ordering;
-	}
-	
-	@Override
-	public int onHand(Item item) {
-		return dataStore.get(item);
-	}
+    private final Table<Warehouse, Item, Integer> dataStore;
+    private final Table<Warehouse, Item, Integer> itemsOnOrder;
+    private final Map<String, Integer> callCounter;
 
-	@Override
-	public List<Item> stockItems() {
-		final Set<Item> keys = dataStore.keySet();
-		return new ArrayList<>(keys);
-	}
-	
-	@Override
-	public int onOrder(Item item){
-		if(ordering.containsKey(item)){
-			return ordering.get(item);
-		}else{
-			return 0;
-		}
-	}
+    public static final String ON_HAND_METHOD = "ON_HAND_METHOD";
 
-	@Override
-	public int onOrder(Item item, Warehouse warehouse) {
-		return 0;
-	}
 
-	@Override
-	public void setRequiredOnHand(Item item, int newAmount) {
-		item.setRequiredOnHand(newAmount);
-		
-	}
+    public FakeDatabase(final Table<Warehouse, Item, Integer> dataStore, final Table<Warehouse, Item, Integer> itemsOnOrder) {
+        this(dataStore, itemsOnOrder, new HashMap<>());
+    }
 
-	@Override
-	public void setRequiredOnHand(Item item, Warehouse warehouse, int newAmount) {
+    public FakeDatabase(final Table<Warehouse, Item, Integer> dataStore, final Table<Warehouse, Item, Integer> itemsOnOrder, Map<String, Integer> callCounter) {
+        this.dataStore = dataStore;
+        this.itemsOnOrder = itemsOnOrder;
+        this.callCounter = callCounter;
+        callCounter.put(ON_HAND_METHOD, 0);
+    }
 
-	}
 
-	@Override
-	public int onHand(Item item, Warehouse warehouse) {
-		return 0;
-	}
+    @Override
+    public int onHand(Item item) {
+        return onHand(item, Warehouse.home());
+    }
+
+    @Override
+    public int onHand(Item item, Warehouse warehouse) {
+        return Optional.ofNullable(dataStore.get(warehouse, item)).orElse(0);
+    }
+
+    @Override
+    public List<Item> stockItems() {
+        return new ArrayList<>(dataStore.columnKeySet());
+    }
+
+    @Override
+    public int onOrder(Item item) {
+        return onOrder(item, Warehouse.home());
+    }
+
+    @Override
+    public int onOrder(Item item, Warehouse warehouse) {
+        return Optional.ofNullable(itemsOnOrder.get(warehouse, item)).orElse(0);
+
+    }
+
+    @Override
+    public void setRequiredOnHand(Item item, int newAmount) {
+        setRequiredOnHand(item, Warehouse.home(), newAmount);
+    }
+
+    @Override
+    public void setRequiredOnHand(Item item, Warehouse warehouse, int newAmount) {
+        final Integer onHand = callCounter.get(ON_HAND_METHOD);
+        callCounter.replace(ON_HAND_METHOD, onHand, onHand + 1);
+    }
 
 }

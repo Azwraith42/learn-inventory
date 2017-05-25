@@ -14,11 +14,9 @@ import java.util.Optional;
 public interface Item {
 	
 	boolean canOrder(LocalDate today);
-	
-	int getShouldHave();
-	
-	void setRequiredOnHand(int newAmount);
 
 	Optional<Order> createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo);
-	
+
+	Optional<Order> createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo, Warehouse warehouse);
+
 }

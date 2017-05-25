@@ -1,4 +1,4 @@
-package test.com.cjpowered.learn.inventory;
+package com.cjpowered.learn.inventory;
 
 import java.util.List;
 

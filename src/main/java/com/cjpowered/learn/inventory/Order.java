@@ -49,4 +49,12 @@ public final class Order {
         return Objects.hash(this.item, this.quantity, this.warehouse);
     }
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "item=" + item +
+                ", quantity=" + quantity +
+                ", warehouse=" + warehouse +
+                '}';
+    }
 }
