@@ -5,12 +5,11 @@ package com.cjpowered.learn.inventory;
  * when you invoke {@link InventoryDatabase#stockItems()}
  *
  */
-import java.time.LocalDate;
-import java.util.Optional;
 
 import com.cjpowered.learn.marketing.MarketingInfo;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public interface Item {
 	

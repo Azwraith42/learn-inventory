@@ -27,6 +27,7 @@ public interface InventoryDatabase {
      *
      * @return fetched value
      */
+    @Deprecated
     int onHand(Item item);
 
     /**
@@ -36,24 +37,68 @@ public interface InventoryDatabase {
      * @return fetched value
      */
     List<Item> stockItems();
+
+    /**
+     * Fetch the number on order.
+     *
+     * @return fetched value
+     */
+    @Deprecated
+    int onOrder(Item item);
+    
     
     /**
      * Fetch the number on order.
-     * 
+     *
+     * @return fetched value
+     */
+    int onOrder(Item item, Warehouse warehouse);
+    
+    
+
+    /**
+     * Change the required on-hand amount for an item.
+     *
+     * @param item
+     *            item to change
+     *
+     * @param newAmount
+     *            new nominal stock level
+     */
+    @Deprecated
+    void setRequiredOnHand(Item item, int newAmount);
+
+    /**
+     * Change the required on-hand amount for an item.
+     *
+     * @param item
+     *            item to change
+     *
+     * @param warehouse
+     *            warehouse to query. The warehouse instance must have been
+     *            returned by the same implementation on which this method is
+     *            called.
+     *            
+     * @param newAmount
+     *            new nominal stock level
+     */
+    void setRequiredOnHand(Item item, Warehouse warehouse, int newAmount);
+
+    /**
+     * Fetch number on-hand.
+     *
      * @param item
      *            item to query. The item instance must have been returned by
      *            the same implementation on which this method is called.
      *
+     *
+     * @param warehouse
+     *            warehouse to query. The warehouse instance must have been
+     *            returned by the same implementation on which this method is
+     *            called.
+     *
      * @return fetched value
      */
-    int onOrder(Item item);
-    
-    /**
-     * Change the required on-hand amount for an item.
-     * 
-     * @param item to change
-     * @param newAmount new nominal stock level
-     */
-    void setRequiredOnHand(Item item, int newAmount);
+    int onHand(Item item, Warehouse warehouse);
 
 }

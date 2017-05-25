@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.cjpowered.learn.inventory.InventoryDatabase;
 import com.cjpowered.learn.inventory.Item;
+import com.cjpowered.learn.inventory.Warehouse;
 
 public class FakeDatabase implements InventoryDatabase {
 
@@ -37,11 +38,26 @@ public class FakeDatabase implements InventoryDatabase {
 			return 0;
 		}
 	}
-	
+
+	@Override
+	public int onOrder(Item item, Warehouse warehouse) {
+		return 0;
+	}
+
 	@Override
 	public void setRequiredOnHand(Item item, int newAmount) {
 		item.setRequiredOnHand(newAmount);
 		
+	}
+
+	@Override
+	public void setRequiredOnHand(Item item, Warehouse warehouse, int newAmount) {
+
+	}
+
+	@Override
+	public int onHand(Item item, Warehouse warehouse) {
+		return 0;
 	}
 
 }

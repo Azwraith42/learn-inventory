@@ -46,7 +46,7 @@ public class InventoryTest {
     	};
     	final MarketingTemplate mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return true;
     		}
     		@Override
@@ -80,7 +80,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}@Override
     		public Season season(LocalDate when){
@@ -126,7 +126,7 @@ public class InventoryTest {
     	};
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -168,7 +168,7 @@ public class InventoryTest {
     	};
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -210,7 +210,7 @@ public class InventoryTest {
     	};
     	final MarketingTemplate mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return true;
     		}
     		@Override
@@ -248,7 +248,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return onSale;
     		}
     		@Override
@@ -298,7 +298,7 @@ public class InventoryTest {
     	};
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return onSale;
     		}
     		@Override
@@ -347,7 +347,7 @@ public class InventoryTest {
     	};
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return onSale;
     		}
     		@Override
@@ -396,7 +396,7 @@ public class InventoryTest {
 		};
 		final MarketingInfo mi = new MarketingTemplate(){
 			@Override
-			public boolean onSale(final Item item){
+			public boolean onSale(final Item item, final LocalDate when){
 				return onSale;
 			}
 			@Override
@@ -431,7 +431,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -465,7 +465,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -502,7 +502,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -537,7 +537,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item) {
+    		public boolean onSale(Item item, final LocalDate when) {
     			return false;
     		};
     		@Override
@@ -571,7 +571,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item) {
+    		public boolean onSale(Item item, final LocalDate when) {
     			return false;
     		};
     		@Override
@@ -604,7 +604,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item) {
+    		public boolean onSale(Item item, final LocalDate when) {
     			return false;
     		};
     		@Override
@@ -638,7 +638,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item) {
+    		public boolean onSale(Item item, final LocalDate when) {
     			return false;
     		};
     		@Override
@@ -671,7 +671,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item){
+    		public boolean onSale(Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -705,7 +705,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item){
+    		public boolean onSale(Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -738,7 +738,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item){
+    		public boolean onSale(Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -772,7 +772,7 @@ public class InventoryTest {
     	final InventoryDatabase db = new FakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item){
+    		public boolean onSale(Item item, final LocalDate when){
     			return false;
     		}
     		@Override

@@ -46,7 +46,7 @@ public class SeasonalItem implements Item {
 	public Optional<Order> createOrder(final LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo) {
 		final int onHand = database.onHand(this);
 		final boolean inSeason = season.equals(marketingInfo.season(when));
-		final boolean onSale = marketingInfo.onSale(this);
+		final boolean onSale = marketingInfo.onSale(this, when);
 		final int onOrder = database.onOrder(this);
 		final int total = onHand + onOrder;
 		final int toOrder;

@@ -44,7 +44,7 @@ public class StockedItem implements Item {
 		final int onOrder = database.onOrder(this);
 		final int onHand = database.onHand(this);
 		final int total = onHand + onOrder;
-		final boolean onSale = marketingInfo.onSale(this);
+		final boolean onSale = marketingInfo.onSale(this, when);
 		final int toOrder;
 		
 		if(total == 0){
