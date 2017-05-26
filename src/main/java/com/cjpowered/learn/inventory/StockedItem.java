@@ -50,10 +50,13 @@ public class StockedItem implements Item {
 		final boolean onSale = marketingInfo.onSale(this, when);
 		final int toOrder;
 
-
+		
+		if(!wantOnHand.containsKey(warehouse) || wantOnHand.get(warehouse) == total || wantOnHand.get(warehouse)  == 0){
+			return Optional.empty();
+		}
+		
 		if(total == 0){
 			final int newAmount;
-
 			newAmount = (int)Math.ceil(wantOnHand.get(warehouse)*1.1);
 
 			database.setRequiredOnHand(this, warehouse, newAmount);

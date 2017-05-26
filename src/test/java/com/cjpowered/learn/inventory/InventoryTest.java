@@ -95,23 +95,13 @@ public class InventoryTest {
     public void doNotOrderIfHaveMore(){
     	// given
     	final int onHand = 10;
+    	final int onOrder = 0;
     	final int shouldHave = 9;
     	final Schedule schedule = new AnyDay();
     	Item item = new StockedItem(shouldHave, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item, final LocalDate when){
@@ -137,23 +127,13 @@ public class InventoryTest {
     public void doNotAddIfEqual(){
     	// given
     	final int onHand = 10;
+    	final int onOrder = 0;
     	final int shouldHave = onHand;
     	final Schedule schedule = new AnyDay();
     	Item item = new StockedItem(shouldHave, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item, final LocalDate when){
@@ -179,23 +159,13 @@ public class InventoryTest {
     public void ifWeHaveMoreThanShouldHaveButStillNeedMoreBecauseOnSale(){
     	// given
     	final int onHand = 10;
+    	final int onOrder = 0;
     	final int shouldHave = 9;
     	final Schedule schedule = new AnyDay();
     	Item item = new StockedItem(shouldHave, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingTemplate mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item, final LocalDate when){
@@ -262,29 +232,15 @@ public class InventoryTest {
     public void onSaleAndInSeasonAdditionLarger(){
     	//given
     	final int onHand = 3;
+    	final int onOrder = 0;
     	final int shouldHave = 15;
     	final Season season = Season.Fall;
     	final boolean onSale = true;
     	final Schedule schedule = new AnyDay();
     	Item item = new SeasonalItem(shouldHave, season, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    		@Override
-    		public void setRequiredOnHand(Item item, int newAmount) {
-    			// TODO Auto-generated method stub
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item, final LocalDate when){
@@ -311,29 +267,15 @@ public class InventoryTest {
     public void onSaleAndInSeasonMultiplicationLarger(){
     	//given
     	final int onHand = 8;
+    	final int onOrder = 0;
     	final int shouldHave = 25;
     	final Season season = Season.Fall;
     	final boolean onSale = true;
     	final Schedule schedule = new AnyDay();
     	Item item = new SeasonalItem (shouldHave, season, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    		@Override
-    		public void setRequiredOnHand(Item item, int newAmount) {
-    			// TODO Auto-generated method stub
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
     		public boolean onSale(final Item item, final LocalDate when){
@@ -360,29 +302,15 @@ public class InventoryTest {
 	public void keepDoubleInventoryIfInSeason(){
 		//given
 		final int onHand = 7;
+		final int onOrder = 0;
 		final int shouldHave = 22;
 		final Season season = Season.Fall;
 		final boolean onSale = false;
 		final Schedule schedule = new AnyDay();
 		Item item = new SeasonalItem(shouldHave, season, schedule);
-		final InventoryDatabase db = new DatabaseTemplate(){
-			@Override
-			public int onHand(Item item) {
-				return onHand;
-			}
-			@Override
-			public List<Item> stockItems() {
-				return Collections.singletonList(item);
-			}
-			@Override
-			public int onOrder(Item item) {
-				return 0;
-			}
-			@Override
-			public void setRequiredOnHand(Item item, int newAmount) {
-				// TODO Auto-generated method stub
-			}
-		};
+		final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
 		final MarketingInfo mi = new MarketingTemplate(){
 			@Override
 			public boolean onSale(final Item item, final LocalDate when){
@@ -796,11 +724,13 @@ public class InventoryTest {
 		final Integer onHand = 5;
 		final Integer shouldHave = 15;
 		final Integer onOrder = 0;
+		final Warehouse warehouse = Warehouse.Ashford;
 		final Schedule schedule = new AnyDay();
-		final Item item = new StockedItem(shouldHave, schedule);
-		final ImmutableTable.Builder<Warehouse, Item, Integer> builder = ImmutableTable.builder();
-		final Table<Warehouse, Item, Integer> store = builder.put(Warehouse.Ashford, item, onHand).build();
-		final Table<Warehouse, Item, Integer> itemsOnOrder = builder.put(Warehouse.Ashford, item, onOrder).build();
+		final Map<Warehouse, Integer> ammountNeededInLocation = new HashMap<>();
+		ammountNeededInLocation.put(warehouse, shouldHave);
+		final Item item = new StockedItem(ammountNeededInLocation, schedule);
+		final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(warehouse, item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(warehouse, item, onOrder).build();
 		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
 		final MarketingInfo mi = new MarketingTemplate(){
 			@Override
@@ -823,6 +753,41 @@ public class InventoryTest {
 		assertEquals(item, actual.get(0).item);
 		assertEquals( 10, actual.get(0).quantity);
 		assertEquals( Warehouse.Ashford, actual.get(0).warehouse);
+    }
+    
+    @Test
+	public void haveInOneWarehouseButNeedInAnother(){
+    	//given
+		final Integer onHand = 5;
+		final Integer shouldHave = 15;
+		final Integer onOrder = 0;
+		final Warehouse warehouse = Warehouse.Ashford;
+		final Schedule schedule = new AnyDay();
+		final Item item = new StockedItem(shouldHave, schedule);
+		final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(warehouse, item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(warehouse, item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
+		final MarketingInfo mi = new MarketingTemplate(){
+			@Override
+			public boolean onSale(Item item, final LocalDate when){
+				return false;
+			}
+			@Override
+			public Season season(LocalDate when) {
+				return Season.Fall;
+			};
+		};
+		final InventoryManager im = new AceInventoryManager(db, mi);
+		final LocalDate today = LocalDate.now();
+
+		//when
+		final List<Order> actual = im.getOrders(today);
+
+		//then
+		assertEquals(1, actual.size());
+		assertEquals(item, actual.get(0).item);
+		assertEquals( 15, actual.get(0).quantity);
+		assertEquals( Warehouse.home(), actual.get(0).warehouse);
     }
     
 }
