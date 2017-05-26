@@ -3,12 +3,14 @@ package com.cjpowered.learn.inventory;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+
 import java.util.Optional;
 
 import com.cjpowered.learn.marketing.MarketingInfo;
 
 public class StockedItem implements Item {
 	
+
 	private final Map<Warehouse, Integer> wantOnHand;
 	private final int ammountInABunch;
 	private final Schedule schedule;
@@ -79,6 +81,5 @@ public class StockedItem implements Item {
 			}
 			return (toOrder < 1) ? Optional.empty() : Optional.of(new Order(this, numberOfBunches*ammountInABunch, warehouse));
 		}
-
 	}
 }

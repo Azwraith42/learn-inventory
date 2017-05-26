@@ -18,11 +18,11 @@ public final class AceInventoryManager implements InventoryManager {
 		this.marketingInfo = marketingInfo;
 	}
 	
-    @Override
     public List<Order> getOrders(final LocalDate today) {
     	 
     	 final List<Order> orders = new ArrayList<>();
     	 final List<Item> items = database.stockItems();
+
     	 for(Warehouse warehouse : Warehouse.values()){
 	    	 for(Item item : items){
 	    		 if(item.canOrder(today) ){

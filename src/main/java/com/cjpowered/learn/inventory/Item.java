@@ -15,8 +15,8 @@ public interface Item {
 	
 	boolean canOrder(LocalDate today);
 
-	Optional<Order> createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo);
-
 	Optional<Order> createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo, Warehouse warehouse);
 
+	Optional<Order> createOrder(LocalDate when, InventoryDatabase database, MarketingInfo marketingInfo);
+	
 }

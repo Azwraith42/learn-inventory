@@ -89,7 +89,6 @@ public class SeasonalItem implements Item {
 			}
 			return (toOrder < 1) ? Optional.empty() : Optional.of(new Order(this, numberOfBunches*ammountInABunch, warehouse));
 		}
-
 	}
 
 }
