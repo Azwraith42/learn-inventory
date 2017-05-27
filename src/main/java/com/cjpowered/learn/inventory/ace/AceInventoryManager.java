@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.cjpowered.learn.inventory.InventoryDatabase;
-import com.cjpowered.learn.inventory.InventoryManager;
-import com.cjpowered.learn.inventory.Item;
-import com.cjpowered.learn.inventory.Order;
+import com.cjpowered.learn.inventory.*;
 import com.cjpowered.learn.marketing.MarketingInfo;
 
 public final class AceInventoryManager implements InventoryManager {
@@ -21,20 +18,21 @@ public final class AceInventoryManager implements InventoryManager {
 		this.marketingInfo = marketingInfo;
 	}
 	
-     @Override
     public List<Order> getOrders(final LocalDate today) {
     	 
     	 final List<Order> orders = new ArrayList<>();
     	 final List<Item> items = database.stockItems();
-    	 for(Item item : items){
-    		 if(item.canOrder(today) ){
-	    		 final Optional<Order> order = item.createOrder(today, database, marketingInfo);
-	    		 if(order.isPresent()){
-	    			 orders.add(order.get());
-	    		 }
-    		 }
-    	 }
 
+    	 for(Warehouse warehouse : Warehouse.values()){
+	    	 for(Item item : items){
+	    		 if(item.canOrder(today) ){
+		    		 final Optional<Order> order = item.createOrder(today, database, marketingInfo, warehouse);
+		    		 if(order.isPresent()){
+		    			 orders.add(order.get());
+		    		 }
+	    		 }
+	    	 }
+    	 }
     	 return orders;
     }
 

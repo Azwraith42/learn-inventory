@@ -1,27 +1,16 @@
-package test.com.cjpowered.learn.inventory;
+package com.cjpowered.learn.inventory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Table;
 import org.junit.Test;
 
-import com.cjpowered.learn.inventory.AnyDay;
-import com.cjpowered.learn.inventory.FirstOfTheMonth;
-import com.cjpowered.learn.inventory.InventoryDatabase;
-import com.cjpowered.learn.inventory.InventoryManager;
-import com.cjpowered.learn.inventory.Item;
-import com.cjpowered.learn.inventory.Order;
-import com.cjpowered.learn.inventory.Schedule;
-import com.cjpowered.learn.inventory.SeasonalItem;
-import com.cjpowered.learn.inventory.StockedItem;
 import com.cjpowered.learn.inventory.ace.AceInventoryManager;
 import com.cjpowered.learn.marketing.MarketingInfo;
 import com.cjpowered.learn.marketing.Season;
@@ -46,7 +35,7 @@ public class InventoryTest {
     	};
     	final MarketingTemplate mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return true;
     		}
     		@Override
@@ -68,6 +57,7 @@ public class InventoryTest {
     @Test
     public void orderEnoughStock(){
     	// given
+		final Map<String, Integer> callCounter = new HashMap<>();
     	final int onHand = 10;
     	final int shouldHave = 16;
     	final int onOrder = 0;
@@ -77,12 +67,13 @@ public class InventoryTest {
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+    	final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
-    		}@Override
+    		}
+    		@Override
     		public Season season(LocalDate when){
     			return Season.Fall;
     		}
@@ -90,11 +81,8 @@ public class InventoryTest {
     	final InventoryManager im = new AceInventoryManager(db, mi);
     	final LocalDate today = LocalDate.now();
     	
-    	
-    	
     	//when
     	final List<Order> actual = im.getOrders(today);
-    	
     	
     	//then
     	Order expectedOrder = new Order(item, shouldHave - onHand);
@@ -107,26 +95,16 @@ public class InventoryTest {
     public void doNotOrderIfHaveMore(){
     	// given
     	final int onHand = 10;
+    	final int onOrder = 0;
     	final int shouldHave = 9;
     	final Schedule schedule = new AnyDay();
     	Item item = new StockedItem(shouldHave, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -149,26 +127,16 @@ public class InventoryTest {
     public void doNotAddIfEqual(){
     	// given
     	final int onHand = 10;
+    	final int onOrder = 0;
     	final int shouldHave = onHand;
     	final Schedule schedule = new AnyDay();
     	Item item = new StockedItem(shouldHave, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -191,26 +159,16 @@ public class InventoryTest {
     public void ifWeHaveMoreThanShouldHaveButStillNeedMoreBecauseOnSale(){
     	// given
     	final int onHand = 10;
+    	final int onOrder = 0;
     	final int shouldHave = 9;
     	final Schedule schedule = new AnyDay();
     	Item item = new StockedItem(shouldHave, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingTemplate mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return true;
     		}
     		@Override
@@ -235,7 +193,7 @@ public class InventoryTest {
     @Test
     public void ifOnSaleKeepExtraTwenty(){
     	//given
-    	final int onHand = 9;
+		final int onHand = 9;
     	final int shouldHave = 15;
     	final boolean onSale = true;
     	final int onOrder = 0;
@@ -245,10 +203,11 @@ public class InventoryTest {
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+    	final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return onSale;
     		}
     		@Override
@@ -273,32 +232,18 @@ public class InventoryTest {
     public void onSaleAndInSeasonAdditionLarger(){
     	//given
     	final int onHand = 3;
+    	final int onOrder = 0;
     	final int shouldHave = 15;
     	final Season season = Season.Fall;
     	final boolean onSale = true;
     	final Schedule schedule = new AnyDay();
     	Item item = new SeasonalItem(shouldHave, season, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    		@Override
-    		public void setRequiredOnHand(Item item, int newAmount) {
-    			// TODO Auto-generated method stub
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return onSale;
     		}
     		@Override
@@ -322,32 +267,18 @@ public class InventoryTest {
     public void onSaleAndInSeasonMultiplicationLarger(){
     	//given
     	final int onHand = 8;
+    	final int onOrder = 0;
     	final int shouldHave = 25;
     	final Season season = Season.Fall;
     	final boolean onSale = true;
     	final Schedule schedule = new AnyDay();
     	Item item = new SeasonalItem (shouldHave, season, schedule);
-    	final InventoryDatabase db = new DatabaseTemplate(){
-    		@Override
-    		public int onHand(Item item) {
-    			return onHand;
-    		}
-    		@Override
-    		public List<Item> stockItems() {
-    			return Collections.singletonList(item);
-    		}
-    		@Override
-    		public int onOrder(Item item) {
-    			return 0;
-    		}
-    		@Override
-    		public void setRequiredOnHand(Item item, int newAmount) {
-    			// TODO Auto-generated method stub
-    		}
-    	};
+    	final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return onSale;
     		}
     		@Override
@@ -371,32 +302,18 @@ public class InventoryTest {
 	public void keepDoubleInventoryIfInSeason(){
 		//given
 		final int onHand = 7;
+		final int onOrder = 0;
 		final int shouldHave = 22;
 		final Season season = Season.Fall;
 		final boolean onSale = false;
 		final Schedule schedule = new AnyDay();
 		Item item = new SeasonalItem(shouldHave, season, schedule);
-		final InventoryDatabase db = new DatabaseTemplate(){
-			@Override
-			public int onHand(Item item) {
-				return onHand;
-			}
-			@Override
-			public List<Item> stockItems() {
-				return Collections.singletonList(item);
-			}
-			@Override
-			public int onOrder(Item item) {
-				return 0;
-			}
-			@Override
-			public void setRequiredOnHand(Item item, int newAmount) {
-				// TODO Auto-generated method stub
-			}
-		};
+		final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(Warehouse.home(), item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
 		final MarketingInfo mi = new MarketingTemplate(){
 			@Override
-			public boolean onSale(final Item item){
+			public boolean onSale(final Item item, final LocalDate when){
 				return onSale;
 			}
 			@Override
@@ -428,10 +345,11 @@ public class InventoryTest {
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+		final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -462,10 +380,11 @@ public class InventoryTest {
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+    	final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -499,10 +418,11 @@ public class InventoryTest {
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+    	final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(final Item item){
+    		public boolean onSale(final Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -534,10 +454,11 @@ public class InventoryTest {
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+    	final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item) {
+    		public boolean onSale(Item item, final LocalDate when) {
     			return false;
     		};
     		@Override
@@ -568,10 +489,11 @@ public class InventoryTest {
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+		final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item) {
+    		public boolean onSale(Item item, final LocalDate when) {
     			return false;
     		};
     		@Override
@@ -601,10 +523,11 @@ public class InventoryTest {
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+    	final Map<String, Integer> callCounter = new HashMap<>();
+		final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item) {
+    		public boolean onSale(Item item, final LocalDate when) {
     			return false;
     		};
     		@Override
@@ -635,10 +558,10 @@ public class InventoryTest {
     	store.put(item, onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+    	final InventoryDatabase db = new LegacyFakeDatabase(store, ordering);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item) {
+    		public boolean onSale(Item item, final LocalDate when) {
     			return false;
     		};
     		@Override
@@ -668,10 +591,11 @@ public class InventoryTest {
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+		final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item){
+    		public boolean onSale(Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -686,7 +610,7 @@ public class InventoryTest {
     	final List<Order> actual = im.getOrders(today);
     	
     	//then
-    	assertEquals(11, item.getShouldHave());
+		assertEquals((Integer)1, callCounter.get(FakeDatabase.ON_HAND_METHOD));
     }
     
     @Test
@@ -702,10 +626,11 @@ public class InventoryTest {
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+    	final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item){
+    		public boolean onSale(Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -720,7 +645,7 @@ public class InventoryTest {
     	final List<Order> actual = im.getOrders(today);
     	
     	//then
-    	assertEquals(11, item.getShouldHave());
+    	assertEquals((Integer)1, callCounter.get(FakeDatabase.ON_HAND_METHOD));
     }
     
     @Test
@@ -735,10 +660,11 @@ public class InventoryTest {
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+		final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item){
+    		public boolean onSale(Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -753,8 +679,8 @@ public class InventoryTest {
     	final List<Order> actual = im.getOrders(today);
     	
     	//then
-    	assertEquals(21, item.getShouldHave());
-    }
+		assertEquals((Integer)1, callCounter.get(FakeDatabase.ON_HAND_METHOD));
+	}
     
     @Test
     public void ifWeRunOutOfSeasonalIncreaseOnHandByTenPercentRoundedUp(){
@@ -769,10 +695,11 @@ public class InventoryTest {
     	store.put(item,  onHand);
     	final HashMap<Item, Integer> ordering = new HashMap<>();
     	ordering.put(item, onOrder);
-    	final InventoryDatabase db = new FakeDatabase(store, ordering);
+		final Map<String, Integer> callCounter = new HashMap<>();
+		final InventoryDatabase db = new LegacyFakeDatabase(store, ordering, callCounter);
     	final MarketingInfo mi = new MarketingTemplate(){
     		@Override
-    		public boolean onSale(Item item){
+    		public boolean onSale(Item item, final LocalDate when){
     			return false;
     		}
     		@Override
@@ -787,7 +714,80 @@ public class InventoryTest {
     	final List<Order> actual = im.getOrders(today);
     	
     	//then
-    	assertEquals(21, item.getShouldHave());
+		assertEquals((Integer)1, callCounter.get(FakeDatabase.ON_HAND_METHOD));
+
+	}
+
+    @Test
+	public void orderFromOtherWarehouses(){
+    	//given
+		final Integer onHand = 5;
+		final Integer shouldHave = 15;
+		final Integer onOrder = 0;
+		final Warehouse warehouse = Warehouse.Ashford;
+		final Schedule schedule = new AnyDay();
+		final Map<Warehouse, Integer> ammountNeededInLocation = new HashMap<>();
+		ammountNeededInLocation.put(warehouse, shouldHave);
+		final Item item = new StockedItem(ammountNeededInLocation, schedule);
+		final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(warehouse, item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(warehouse, item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
+		final MarketingInfo mi = new MarketingTemplate(){
+			@Override
+			public boolean onSale(Item item, final LocalDate when){
+				return false;
+			}
+			@Override
+			public Season season(LocalDate when) {
+				return Season.Fall;
+			};
+		};
+		final InventoryManager im = new AceInventoryManager(db, mi);
+		final LocalDate today = LocalDate.now();
+
+		//when
+		final List<Order> actual = im.getOrders(today);
+
+		//then
+		assertEquals(1, actual.size());
+		assertEquals(item, actual.get(0).item);
+		assertEquals( 10, actual.get(0).quantity);
+		assertEquals( Warehouse.Ashford, actual.get(0).warehouse);
+    }
+    
+    @Test
+	public void haveInOneWarehouseButNeedInAnother(){
+    	//given
+		final Integer onHand = 5;
+		final Integer shouldHave = 15;
+		final Integer onOrder = 0;
+		final Warehouse warehouse = Warehouse.Ashford;
+		final Schedule schedule = new AnyDay();
+		final Item item = new StockedItem(shouldHave, schedule);
+		final Table<Warehouse, Item, Integer> store = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(warehouse, item, onHand).build();
+		final Table<Warehouse, Item, Integer> itemsOnOrder = new ImmutableTable.Builder<Warehouse, Item, Integer>().put(warehouse, item, onOrder).build();
+		final InventoryDatabase db = new FakeDatabase(store, itemsOnOrder);
+		final MarketingInfo mi = new MarketingTemplate(){
+			@Override
+			public boolean onSale(Item item, final LocalDate when){
+				return false;
+			}
+			@Override
+			public Season season(LocalDate when) {
+				return Season.Fall;
+			};
+		};
+		final InventoryManager im = new AceInventoryManager(db, mi);
+		final LocalDate today = LocalDate.now();
+
+		//when
+		final List<Order> actual = im.getOrders(today);
+
+		//then
+		assertEquals(1, actual.size());
+		assertEquals(item, actual.get(0).item);
+		assertEquals( 15, actual.get(0).quantity);
+		assertEquals( Warehouse.home(), actual.get(0).warehouse);
     }
     
 }

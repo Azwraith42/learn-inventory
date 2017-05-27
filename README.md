@@ -41,6 +41,9 @@ if necessary.
 
 0. Clone this repo and get your development environment working. You will
 know it's all working when you can run the existing unit test suite.
+    - you'll need a Java 8 (aka JDK 1.8) SDK
+    - you'll probably want an IDE, http://eclipse.org has a good one, just the plain Java IDE is all you need
+    - you should have Maven, too: http://maven.apache.org .
 0. _Bonus: have travis-ci.org automatically build and test your clone_
     - sign up to travis-ci.org if you haven't already
     - activate your repository on the Travis-CI website
@@ -64,6 +67,23 @@ feature, no matter how the requirements change. Keep working on features in
 priority order even if that priority changes
 - If requirements are incomplete or in conflict, your teacher will act as
 the product owner and help clarify
+
+## Technical Notes and Contracts
+
+- you deliver software through progressive enhancements to the `AceInventoryManager`
+class's `#getOrders(LocalDate)` method.
+- Note that `AceInventoryManager` implements
+the `InventoryManager` interface. You can't change that interface without agreement with the
+ordering department.
+- you are free to implement the Item interface as needed for your enhancements. The
+ordering department will adjust their own database implementation to ensure your
+Item instance data is returned when needed.
+- Item equality is outside your scope. The ordering department defines item equality
+via the standard Java `#equals(Object)` method. You must assume that two Item instances
+are equal if and only if they are the exact same instance. In other words, two items,
+created by two different construction calls are, by definition, not equal even if they
+contain the same instance data
+ 
 
 ## The Business Rules
 

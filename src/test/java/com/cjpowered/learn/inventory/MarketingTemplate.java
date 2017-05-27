@@ -1,4 +1,4 @@
-package test.com.cjpowered.learn.inventory;
+package com.cjpowered.learn.inventory;
 
 import java.time.LocalDate;
 
@@ -9,7 +9,7 @@ import com.cjpowered.learn.marketing.Season;
 public class MarketingTemplate implements MarketingInfo {
 
     @Override
-    public boolean onSale(final Item item) {
+    public boolean onSale(final Item item, final LocalDate when) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
